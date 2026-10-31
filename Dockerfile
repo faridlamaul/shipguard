@@ -15,7 +15,7 @@ RUN mkdir /rules \
     | tar -cf - -T - | tar -xf - -C /rules
 
 # Downloads the pinned scanners and fails the build on any checksum mismatch.
-FROM alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6 AS scanners
+FROM alpine:3.24@sha256:be2656061b536c1883c4034790e21d0a09c5aaaf51968b89368a3c0371ea2c9a AS scanners
 ARG TARGETARCH
 RUN apk add --no-cache curl
 COPY versions.env /opt/versions.env
@@ -24,7 +24,7 @@ RUN sh /opt/scripts/install-scanners.sh "$TARGETARCH"
 
 # Runs as root on purpose: GitHub Docker actions require it to access the
 # workspace, and CI job images write outputs into root-owned clone directories.
-FROM alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
+FROM alpine:3.24@sha256:be2656061b536c1883c4034790e21d0a09c5aaaf51968b89368a3c0371ea2c9a
 RUN apk add --no-cache git ca-certificates \
     && git config --system --add safe.directory '*'
 COPY --from=scanners /usr/local/bin/gitleaks /usr/local/bin/opengrep /usr/local/bin/osv-scanner /usr/local/bin/trivy /usr/local/bin/
